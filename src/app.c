@@ -27,6 +27,7 @@ TextLayer* createLayer(int y, int height, const char* fontName) {
 void handle_minute_tick(struct tm *tick_time, TimeUnits units_changed) {
 
    char*  hours[] = {"zwölf", "eins", "zwei", "drei", "view", "fünf", "sechs", "sieben", "acht", "neun", "zehn", "elf"};
+   char*  minutes[] = {"null", "zehn", "zwanzig", "dreißig", "vierzig", "fünfzig"};
    char   offset[5];
       
    // get current time
@@ -40,20 +41,8 @@ void handle_minute_tick(struct tm *tick_time, TimeUnits units_changed) {
       text_layer_set_text(_hour, hours[currentTime->tm_hour]);
    }
    
-   if (currentTime->tm_min >= 0 && currentTime->tm_min < 15) {
-      text_layer_set_text(_minute, "null");
-      snprintf (offset, 5, "+%d", currentTime->tm_min);
-   } else if (currentTime->tm_min >= 15 && currentTime->tm_min < 30) {
-      text_layer_set_text(_minute, "fünfzehn");
-      snprintf (offset, 5, "+%d", currentTime->tm_min - 15);
-   } else if (currentTime->tm_min >= 30 && currentTime->tm_min < 45) {
-      text_layer_set_text(_minute, "dreißig");
-      snprintf (offset, 5, "+%d", currentTime->tm_min - 30);
-   } else if (currentTime->tm_min >= 45) {
-      text_layer_set_text(_minute, "fünfundvierzig");
-      snprintf (offset, 5, "+%d", currentTime->tm_min - 45);
-   }
-   
+   text_layer_set_text(_minute, minutes[currentTime->tm_min / 10]);
+   snprintf (offset, 5, "+ %d", currentTime->tm_min % 10);
    text_layer_set_text(_offset, offset);
 }
 
@@ -70,8 +59,8 @@ static void init() {
 
    // create the text layers
    _hour   = createLayer(10, 45, FONT_KEY_BITHAM_42_BOLD);
-   _minute = createLayer(60, 35, FONT_KEY_GOTHIC_28);
-   _offset = createLayer(100, 32, FONT_KEY_BITHAM_30_BLACK);
+   _minute = createLayer(60, 45, FONT_KEY_BITHAM_42_LIGHT);
+   _offset = createLayer(110, 32, FONT_KEY_BITHAM_30_BLACK);
    
    // Ensures time is displayed immediately (will break if NULL tick event accessed).
    // (This is why it's a good idea to have a separate routine to do the update itself.)
