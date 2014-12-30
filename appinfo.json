@@ -1,0 +1,19 @@
+{
+    "appKeys": {},
+    "capabilities": [
+        ""
+    ],
+    "companyName": "daniel@corefault.de",
+    "longName": "minimal",
+    "projectType": "native",
+    "resources": {
+        "media": []
+    },
+    "shortName": "minimal",
+    "uuid": "6d56bb2e-90a7-48c8-ba31-371c8ad2d5ce",
+    "versionCode": 1,
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": true
+    }
+}
