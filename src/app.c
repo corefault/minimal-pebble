@@ -28,11 +28,14 @@ void handle_minute_tick(struct tm *tick_time, TimeUnits units_changed) {
 
    char*  hours[] = {"zwölf", "eins", "zwei", "drei", "view", "fünf", "sechs", "sieben", "acht", "neun", "zehn", "elf"};
    char*  minutes[] = {"null", "zehn", "zwanzig", "dreißig", "vierzig", "fünfzig"};
-   char   offset[5];
+   static char   buffer[20];
       
    // get current time
    time_t now = time(NULL);
    struct tm * currentTime = localtime(&now);
+
+   memset(buffer, sizeof(buffer), 0);
+   snprintf (buffer, sizeof(buffer), "+%d", currentTime->tm_min % 10);
 
    // some calculations
    if (currentTime->tm_hour > 12) {
@@ -40,10 +43,10 @@ void handle_minute_tick(struct tm *tick_time, TimeUnits units_changed) {
    } else {
       text_layer_set_text(_hour, hours[currentTime->tm_hour]);
    }
-   
    text_layer_set_text(_minute, minutes[currentTime->tm_min / 10]);
-   snprintf (offset, 5, "+ %d", currentTime->tm_min % 10);
-   text_layer_set_text(_offset, offset);
+   text_layer_set_text(_offset, buffer);
+   
+   APP_LOG(APP_LOG_LEVEL_DEBUG, "%d:%d (%s)", currentTime->tm_hour, currentTime->tm_min, buffer);
 }
 
 // ---- now the application code --------------------
@@ -60,16 +63,15 @@ static void init() {
    // create the text layers
    _hour   = createLayer(10, 45, FONT_KEY_BITHAM_42_BOLD);
    _minute = createLayer(60, 45, FONT_KEY_BITHAM_42_LIGHT);
-   _offset = createLayer(110, 32, FONT_KEY_BITHAM_30_BLACK);
-   
-   // Ensures time is displayed immediately (will break if NULL tick event accessed).
-   // (This is why it's a good idea to have a separate routine to do the update itself.)
-   handle_minute_tick(NULL, 0);
+   _offset = createLayer(110, 30, FONT_KEY_GOTHIC_28);
 
    layer_add_child(window_get_root_layer(_window), text_layer_get_layer(_hour));
    layer_add_child(window_get_root_layer(_window), text_layer_get_layer(_minute));   
    layer_add_child(window_get_root_layer(_window), text_layer_get_layer(_offset));
-
+   
+   // Ensures time is displayed immediately (will break if NULL tick event accessed).
+   // (This is why it's a good idea to have a separate routine to do the update itself.)
+   handle_minute_tick(NULL, 0);
    tick_timer_service_subscribe(MINUTE_UNIT, handle_minute_tick);
 }
 
