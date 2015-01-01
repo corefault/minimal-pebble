@@ -1,23 +1,22 @@
 #include <pebble.h>
+#include "translate.h"
 
 Window    *_window; 
-TextLayer *_hour;
-TextLayer *_minute;
-TextLayer *_offset;
+TextLayer *_lines[5];
+static GFont _font;
 
 const int WIDTH = 144;
-const int HEIGHT = 168;
 
 /**
  * helper function to create text layer
  */
-TextLayer* createLayer(int y, int height, const char* fontName) {
+TextLayer* createLine(int y, int height, int align) {
    TextLayer* layer;
    layer = text_layer_create(GRect(0, y, WIDTH, height));
    text_layer_set_text_color(layer, GColorWhite);
    text_layer_set_background_color(layer, GColorClear);
-   text_layer_set_font(layer, fonts_get_system_font(fontName));
-   text_layer_set_text_alignment(layer, GTextAlignmentLeft);
+   text_layer_set_font(layer, _font); 
+   text_layer_set_text_alignment(layer, align);
    return layer;
 }
 
@@ -25,49 +24,43 @@ TextLayer* createLayer(int y, int height, const char* fontName) {
  * callback for minute tickhandler
  */
 void handle_minute_tick(struct tm *tick_time, TimeUnits units_changed) {
-
-   char*  hours[] = {"zwölf", "eins", "zwei", "drei", "view", "fünf", "sechs", "sieben", "acht", "neun", "zehn", "elf"};
-   char*  minutes[] = {"null", "zehn", "zwanzig", "dreißig", "vierzig", "fünfzig"};
-   static char   buffer[20];
-      
    // get current time
    time_t now = time(NULL);
    struct tm * currentTime = localtime(&now);
-
-   memset(buffer, sizeof(buffer), 0);
-   snprintf (buffer, sizeof(buffer), "+%d", currentTime->tm_min % 10);
-
-   // some calculations
-   if (currentTime->tm_hour > 12) {
-      text_layer_set_text(_hour, hours[currentTime->tm_hour - 12]);
-   } else {
-      text_layer_set_text(_hour, hours[currentTime->tm_hour]);
-   }
-   text_layer_set_text(_minute, minutes[currentTime->tm_min / 10]);
-   text_layer_set_text(_offset, buffer);
    
-   APP_LOG(APP_LOG_LEVEL_DEBUG, "%d:%d (%s)", currentTime->tm_hour, currentTime->tm_min, buffer);
+   text_layer_set_text(_lines[0], "Es ist");
+   text_layer_set_text(_lines[1], translate_line(PRE, currentTime->tm_hour, currentTime->tm_min));
+   text_layer_set_text(_lines[2], translate_line(MIDDLE, currentTime->tm_hour, currentTime->tm_min));
+   text_layer_set_text(_lines[3], translate_line(POST, currentTime->tm_hour, currentTime->tm_min));
+   text_layer_set_text(_lines[4], translate_remaining(currentTime->tm_min));
 }
 
 // ---- now the application code --------------------
-
+ 
 /**
  * initialization of application
  */
 static void init() {
+   int i;
+   
    // Create our app's base window
    _window = window_create();
    window_stack_push(_window, true);
    window_set_background_color(_window, GColorBlack);
 
-   // create the text layers
-   _hour   = createLayer(10, 45, FONT_KEY_BITHAM_42_BOLD);
-   _minute = createLayer(60, 45, FONT_KEY_BITHAM_42_LIGHT);
-   _offset = createLayer(110, 30, FONT_KEY_GOTHIC_28);
+   // load custome font
+   _font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_24));
+   
+   _lines[0] = createLine(20, 30, GTextAlignmentLeft); 
+   _lines[1] = createLine(50, 30, GTextAlignmentCenter); 
+   _lines[2] = createLine(80, 30, GTextAlignmentLeft); 
+   _lines[3] = createLine(110, 30, GTextAlignmentRight);    
+   _lines[4] = createLine(140, 25, GTextAlignmentCenter);    
 
-   layer_add_child(window_get_root_layer(_window), text_layer_get_layer(_hour));
-   layer_add_child(window_get_root_layer(_window), text_layer_get_layer(_minute));   
-   layer_add_child(window_get_root_layer(_window), text_layer_get_layer(_offset));
+   // create the text layers
+   for (i = 0; i < 5; i++) {
+      layer_add_child(window_get_root_layer(_window), text_layer_get_layer(_lines[i]));
+   }
    
    // Ensures time is displayed immediately (will break if NULL tick event accessed).
    // (This is why it's a good idea to have a separate routine to do the update itself.)
@@ -79,10 +72,15 @@ static void init() {
  * application cleanup
  */
 static void deinit() {
+   int i = 0;
+   
+   // Unload GFont
+   fonts_unload_custom_font(_font);
+
    window_destroy(_window);
-   text_layer_destroy(_hour);
-   text_layer_destroy(_minute);
-   text_layer_destroy(_offset);
+   for (i = 0; i < 5; i++) {
+      text_layer_destroy(_lines[i]);
+   }
 }
 
 

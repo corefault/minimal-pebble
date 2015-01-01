@@ -7,7 +7,13 @@
     "longName": "minimal",
     "projectType": "native",
     "resources": {
-        "media": []
+        "media": [
+            {
+                "file": "fonts/Lato-Medium.ttf",
+                "name": "FONT_24",
+                "type": "font"
+            }
+        ]
     },
     "shortName": "minimal",
     "uuid": "6d56bb2e-90a7-48c8-ba31-371c8ad2d5ce",
