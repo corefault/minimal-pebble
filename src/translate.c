@@ -11,13 +11,13 @@ struct t_info info[] = {
    {.pre = "zehn nach", .mid = "", .post = "$0 Uhr"},
    {.pre = "viertel nach", .mid = "", .post = "$0 Uhr"},
    {.pre = "zwanzig nach", .mid = "", .post = "$0 Uhr"},
-   {.pre = "fünf vor", .mid = "halb", .post = "$1"},
-   {.pre = "", .mid = "halb", .post = "$1"},
-   {.pre = "fünf nach", .mid = "halb", .post = "$1"},
-   {.pre = "zwangig vor", .mid = "", .post = "$1"},
-   {.pre = "viertel vor", .mid = "", .post = "$1"},
-   {.pre = "zehn vor", .mid = "", .post = "$1"},
-   {.pre = "fünf vor", .mid = "", .post = "$1"}
+   {.pre = "fünf vor", .mid = "halb", .post = "$1 Uhr"},
+   {.pre = "", .mid = "halb", .post = "$1 Uhr"},
+   {.pre = "fünf nach", .mid = "halb", .post = "$1 Uhr"},
+   {.pre = "zwangig vor", .mid = "", .post = "$1 Uhr"},
+   {.pre = "viertel vor", .mid = "", .post = "$1 Uhr"},
+   {.pre = "zehn vor", .mid = "", .post = "$1 Uhr"},
+   {.pre = "fünf vor", .mid = "", .post = "$1 Uhr"}
 };
    
 /**

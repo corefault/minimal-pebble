@@ -53,7 +53,7 @@ static void init() {
    
    _lines[0] = createLine(20, 30, GTextAlignmentLeft); 
    _lines[1] = createLine(50, 30, GTextAlignmentCenter); 
-   _lines[2] = createLine(80, 30, GTextAlignmentLeft); 
+   _lines[2] = createLine(80, 30, GTextAlignmentCenter); 
    _lines[3] = createLine(110, 30, GTextAlignmentRight);    
    _lines[4] = createLine(140, 25, GTextAlignmentCenter);    
 
