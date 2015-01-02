@@ -14,7 +14,7 @@ struct t_info info[] = {
    {.pre = "fünf vor", .mid = "halb", .post = "$1 Uhr"},
    {.pre = "", .mid = "halb", .post = "$1 Uhr"},
    {.pre = "fünf nach", .mid = "halb", .post = "$1 Uhr"},
-   {.pre = "zwangig vor", .mid = "", .post = "$1 Uhr"},
+   {.pre = "zwanzig vor", .mid = "", .post = "$1 Uhr"},
    {.pre = "viertel vor", .mid = "", .post = "$1 Uhr"},
    {.pre = "zehn vor", .mid = "", .post = "$1 Uhr"},
    {.pre = "fünf vor", .mid = "", .post = "$1 Uhr"}
@@ -24,13 +24,16 @@ struct t_info info[] = {
  * get 5 minute remainig dots
  */
 char* translate_remaining(int minute) {
-   static char   str[6];
+   static char   str[12];
    
    int i;
    minute = minute % 5;
    
-   memset(str, 0, 6);
+   memset(str, 0, 12);
    for (i = 0; i < minute; i++) {
+      if (i > 0) {
+         strcat(str, " ");
+      }
       strcat(str, ".");
    }
    return str;
