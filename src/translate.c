@@ -2,7 +2,7 @@
 #include "translate.h"
 
 // global map of german words
-static char*   _map[] = {"null", "eins", "zwei", "drei", "vier", "fünf", "sechs", "sieben", "acht", "neun", "zehn", "elf", "zwölf"};
+static char*   _map[] = {"null", "ein", "zwei", "drei", "vier", "fünf", "sechs", "sieben", "acht", "neun", "zehn", "elf", "zwölf"};
 
 // global configuration structure
 struct t_info info[] = {

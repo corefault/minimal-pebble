@@ -30,6 +30,7 @@ static void trigger_animation(int index, int duration) {
    }
    _animation[index] = property_animation_create_layer_frame(layer, &from_frame, &to_frame);
    animation_set_duration ((Animation*)_animation[index], duration);
+   animation_set_curve ((Animation*)_animation[index], AnimationCurveEaseOut);
    animation_schedule((Animation*)_animation[index]);
 }
 //----------------------------------------------------------------------------
