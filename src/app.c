@@ -1,14 +1,13 @@
 #include <pebble.h>
 #include "translate.h"
 
-Window    *_window; 
-TextLayer *_lines[5];
-
+static Window    *_window; 
+static TextLayer *_lines[5];
+static PropertyAnimation *_animation[5] = {0}; 
+   
 const int WIDTH = 144;
 
-/**
- * helper function to create text layer
- */
+//----------------------------------------------------------------------------
 TextLayer* createLine(int y, int height, int align) {
    TextLayer* layer;
    layer = text_layer_create(GRect(0, y, WIDTH, height));
@@ -18,27 +17,42 @@ TextLayer* createLine(int y, int height, int align) {
    text_layer_set_text_alignment(layer, align);
    return layer;
 }
+//----------------------------------------------------------------------------
+static void trigger_animation(int index, int duration) {
+   Layer* layer = (Layer*) _lines[index];
+   GRect from_frame = layer_get_frame(layer);
+   GRect to_frame = from_frame;
+   from_frame.origin.x = 160;
+   to_frame.origin.x = 0;
 
-/**
- * callback for minute tickhandler
- */
+   if (_animation[index] != 0) {
+      property_animation_destroy (_animation[index]);
+   }
+   _animation[index] = property_animation_create_layer_frame(layer, &from_frame, &to_frame);
+   animation_set_duration ((Animation*)_animation[index], duration);
+   animation_schedule((Animation*)_animation[index]);
+}
+//----------------------------------------------------------------------------
 void handle_minute_tick(struct tm *tick_time, TimeUnits units_changed) {
    // get current time
    time_t now = time(NULL);
    struct tm * currentTime = localtime(&now);
+   int    i;
    
    text_layer_set_text(_lines[0], "Es ist");
    text_layer_set_text(_lines[1], translate_line(PRE, currentTime->tm_hour, currentTime->tm_min));
    text_layer_set_text(_lines[2], translate_line(MIDDLE, currentTime->tm_hour, currentTime->tm_min));
    text_layer_set_text(_lines[3], translate_line(POST, currentTime->tm_hour, currentTime->tm_min));
    text_layer_set_text(_lines[4], translate_remaining(currentTime->tm_min));
+   
+   for (i = 0; i < 5; i++) {
+      trigger_animation(i, 500 + (i*250));
+   }
 }
 
 // ---- now the application code --------------------
- 
-/**
- * initialization of application
- */
+
+//----------------------------------------------------------------------------
 static void init() {
    int i;
    
@@ -63,23 +77,17 @@ static void init() {
    handle_minute_tick(NULL, 0);
    tick_timer_service_subscribe(MINUTE_UNIT, handle_minute_tick);
 }
-
-/**
- * application cleanup
- */
+//----------------------------------------------------------------------------
 static void deinit() {
    int i = 0;
  
    window_destroy(_window);
    for (i = 0; i < 5; i++) {
       text_layer_destroy(_lines[i]);
+      property_animation_destroy (_animation[i]);
    }
 }
-
-
-/**
- * main entry point
- */
+//----------------------------------------------------------------------------
 int main(void) {
   init();
   app_event_loop();
