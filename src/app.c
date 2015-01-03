@@ -3,7 +3,6 @@
 
 Window    *_window; 
 TextLayer *_lines[5];
-static GFont _font;
 
 const int WIDTH = 144;
 
@@ -15,7 +14,7 @@ TextLayer* createLine(int y, int height, int align) {
    layer = text_layer_create(GRect(0, y, WIDTH, height));
    text_layer_set_text_color(layer, GColorWhite);
    text_layer_set_background_color(layer, GColorClear);
-   text_layer_set_font(layer, _font); 
+   text_layer_set_font(layer, fonts_get_system_font(FONT_KEY_GOTHIC_28));
    text_layer_set_text_alignment(layer, align);
    return layer;
 }
@@ -47,15 +46,12 @@ static void init() {
    _window = window_create();
    window_stack_push(_window, true);
    window_set_background_color(_window, GColorBlack);
-
-   // load custome font
-   _font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_24));
    
-   _lines[0] = createLine(20, 30, GTextAlignmentLeft); 
-   _lines[1] = createLine(50, 30, GTextAlignmentCenter); 
-   _lines[2] = createLine(80, 30, GTextAlignmentCenter); 
-   _lines[3] = createLine(110, 30, GTextAlignmentRight);    
-   _lines[4] = createLine(140, 25, GTextAlignmentCenter);    
+   _lines[0] = createLine(15, 32, GTextAlignmentLeft); 
+   _lines[1] = createLine(45, 32, GTextAlignmentCenter); 
+   _lines[2] = createLine(75, 32, GTextAlignmentCenter); 
+   _lines[3] = createLine(105, 32, GTextAlignmentRight);    
+   _lines[4] = createLine(135, 32, GTextAlignmentCenter);    
 
    // create the text layers
    for (i = 0; i < 5; i++) {
@@ -73,10 +69,7 @@ static void init() {
  */
 static void deinit() {
    int i = 0;
-   
-   // Unload GFont
-   fonts_unload_custom_font(_font);
-
+ 
    window_destroy(_window);
    for (i = 0; i < 5; i++) {
       text_layer_destroy(_lines[i]);
